@@ -45,6 +45,7 @@
                 <div class="profile-intro">
                     <p class="intro-text" id="profileIntroText" th:text="${groomName} + ' ♥ ' + ${brideName}">장성현 ♥ 김지현</p>
                     <p class="intro-sub" id="profileIntroSub">우리의 결혼식에 초대합니다</p>
+                    <div class="intro-sub-counter" id="introSubCharCount" style="display: none;">0/280</div>
                     <div class="admin-intro-controls" style="display: none;">
                         <button id="profileEditBtn" class="admin-edit-btn">편집</button>
                         <button id="profileSaveBtn" class="admin-save-btn" style="display: none;">적용</button>
@@ -137,7 +138,7 @@
                 </div>
                 <div class="miniroom-content">
                     <!-- 미니룸 이미지: 나중에 웨딩 일러스트로 교체 -->
-                    <img id="miniroomImage" src="https://via.placeholder.com/462x363?text=Wedding+Miniroom" alt="미니룸" class="miniroom-image">
+                    <img id="miniroomImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='462' height='363'%3E%3Crect fill='%23e8f5ff' width='462' height='363'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='18'%3EWedding Miniroom%3C/text%3E%3C/svg%3E" alt="미니룸" class="miniroom-image">
                     <button class="miniroom-delete-btn" id="miniroomImageDelete" style="display: none;">삭제</button>
                 </div>
             </div>
@@ -163,7 +164,7 @@
                 <div class="guestbook-form-area">
                     <div class="guestbook-header">
                         <div class="guestbook-profile-preview">
-                            <img src="https://via.placeholder.com/100x100?text=Profile" alt="프로필" class="guestbook-profile-img">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23e0e0e0' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='12'%3EProfile%3C/text%3E%3C/svg%3E" alt="프로필" class="guestbook-profile-img">
                         </div>
                         <div class="guestbook-input-wrapper">
                             <input type="text" id="guestbookMessage" placeholder="방명록에 하고싶은 말을 남겨보세요~!" class="guestbook-message-input">
@@ -212,10 +213,10 @@
                 </div>
                 <div class="photo-gallery-wrapper">
                     <div class="photo-gallery">
-                        <img src="https://via.placeholder.com/200x200?text=Photo1" alt="사진1">
-                        <img src="https://via.placeholder.com/200x200?text=Photo2" alt="사진2">
-                        <img src="https://via.placeholder.com/200x200?text=Photo3" alt="사진3">
-                        <img src="https://via.placeholder.com/200x200?text=Photo4" alt="사진4">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진1">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진2">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진3">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진4">
                     </div>
                 </div>
             </div>
@@ -278,22 +279,22 @@
             <button id="adminLoginClose" class="modal-close-btn">×</button>
         </div>
         <div class="modal-body-area">
-            <div class="admin-login-form">
+            <form id="adminLoginForm" class="admin-login-form" method="dialog">
                 <div class="admin-input-group">
-                    <label>ID</label>
-                    <input type="text" id="adminId" placeholder="관리자 ID">
+                    <label for="adminId">ID</label>
+                    <input type="text" id="adminId" placeholder="관리자 ID" autocomplete="username">
                 </div>
                 <div class="admin-input-group">
-                    <label>Password</label>
-                    <input type="password" id="adminPassword" placeholder="비밀번호">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="비밀번호" autocomplete="current-password">
                 </div>
                 <div class="admin-login-error" id="adminLoginError" style="display: none; color: red; font-size: 11px; margin-top: 10px;">
                     ID 또는 비밀번호가 일치하지 않습니다.
                 </div>
-                <button id="adminLoginSubmit" class="admin-login-submit">로그인</button>
-                <button id="adminLogoutBtn" class="admin-logout-btn" style="display: none;">로그아웃</button>
-                <button id="adminApplyAllBtn" class="admin-apply-all-btn" style="display: none;">💾 모두 적용</button>
-            </div>
+                <button type="submit" id="adminLoginSubmit" class="admin-login-submit">로그인</button>
+                <button type="button" id="adminLogoutBtn" class="admin-logout-btn" style="display: none;">로그아웃</button>
+                <button type="button" id="adminApplyAllBtn" class="admin-apply-all-btn" style="display: none;">💾 모두 적용</button>
+            </form>
         </div>
     </div>
 </div>
@@ -361,10 +362,10 @@
 <template id="tplPhoto">
     <div class="page-photo">
         <div class="photo-gallery">
-            <img src="https://via.placeholder.com/200x200?text=Photo1" alt="사진1">
-            <img src="https://via.placeholder.com/200x200?text=Photo2" alt="사진2">
-            <img src="https://via.placeholder.com/200x200?text=Photo3" alt="사진3">
-            <img src="https://via.placeholder.com/200x200?text=Photo4" alt="사진4">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진1">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진2">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진3">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e0e0' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EPhoto%3C/text%3E%3C/svg%3E" alt="사진4">
         </div>
     </div>
 </template>

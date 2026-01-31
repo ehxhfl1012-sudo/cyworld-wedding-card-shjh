@@ -140,27 +140,33 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 관리자 로그인
-    
-    if (adminLoginSubmit) {
-        adminLoginSubmit.addEventListener("click", () => {
-            const id = adminId.value.trim();
-            const pw = adminPassword.value.trim();
-            
-            if (id === "admin" && pw === "1234") {
-                isAdminLoggedIn = true;
-                localStorage.setItem("adminLoggedIn", "true");
-                adminLoginModal.classList.add("hidden");
-                showAdminControls();
-                adminId.value = "";
-                adminPassword.value = "";
-                adminLoginError.style.display = "none";
-                if (adminApplyAllBtn) adminApplyAllBtn.style.display = "block";
-                alert("관리자 로그인 성공!");
-            } else {
-                adminLoginError.style.display = "block";
-            }
+    // 관리자 로그인 (form submit으로 처리 → Password 필드 form 경고 해소)
+    const adminLoginForm = document.getElementById("adminLoginForm");
+    function doAdminLogin() {
+        const id = adminId.value.trim();
+        const pw = adminPassword.value.trim();
+        if (id === "admin" && pw === "1234") {
+            isAdminLoggedIn = true;
+            localStorage.setItem("adminLoggedIn", "true");
+            adminLoginModal.classList.add("hidden");
+            showAdminControls();
+            adminId.value = "";
+            adminPassword.value = "";
+            adminLoginError.style.display = "none";
+            if (adminApplyAllBtn) adminApplyAllBtn.style.display = "block";
+            alert("관리자 로그인 성공!");
+        } else {
+            adminLoginError.style.display = "block";
+        }
+    }
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            doAdminLogin();
         });
+    }
+    if (adminLoginSubmit) {
+        adminLoginSubmit.addEventListener("click", (e) => { e.preventDefault(); doAdminLogin(); });
     }
     
     // 모든 변경사항 적용
@@ -198,17 +204,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 const introSub = document.getElementById("profileIntroSub");
                 
                 if (introText && introSub) {
+                    let subText = (introSub.textContent || "").slice(0, INTRO_SUB_MAX_LENGTH);
+                    if (introSub.textContent.length > INTRO_SUB_MAX_LENGTH) introSub.textContent = subText;
                     localStorage.setItem("profileIntroText", introText.textContent);
-                    localStorage.setItem("profileIntroSub", introSub.textContent);
-                    
+                    localStorage.setItem("profileIntroSub", subText);
                     introText.contentEditable = "false";
                     introSub.contentEditable = "false";
-                    
                     introText.style.border = "none";
                     introSub.style.border = "none";
                     hasChanges = true;
                 }
-                
                 // 3. Main Title 저장
                 const mainTitle = document.querySelector(".main-title");
                 if (mainTitle && mainTitle.contentEditable === "true") {
@@ -357,16 +362,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const introSub = document.getElementById("profileIntroSub");
         
         if (introText && introSub) {
+            let subText = (introSub.textContent || "").slice(0, INTRO_SUB_MAX_LENGTH);
+            if (introSub.textContent.length > INTRO_SUB_MAX_LENGTH) introSub.textContent = subText;
             localStorage.setItem("profileIntroText", introText.textContent);
-            localStorage.setItem("profileIntroSub", introSub.textContent);
-            
+            localStorage.setItem("profileIntroSub", subText);
             introText.contentEditable = "false";
             introSub.contentEditable = "false";
-            
             introText.style.border = "none";
             introSub.style.border = "none";
         }
-        
         const mainTitle = document.querySelector(".main-title");
         if (mainTitle && mainTitle.contentEditable === "true") {
             localStorage.setItem("mainTitle", mainTitle.textContent.trim());
@@ -490,57 +494,103 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Profile Intro 편집 기능
+    // Profile Intro 편집 기능 (intro-sub 280자 제한)
+    const INTRO_SUB_MAX_LENGTH = 280;
     const profileEditBtn = document.getElementById("profileEditBtn");
     const profileSaveBtn = document.getElementById("profileSaveBtn");
-    
+    const introSubCharCountEl = document.getElementById("introSubCharCount");
+    let introSubInputHandler = null;
+
+    function updateIntroSubCounter() {
+        const introSub = document.getElementById("profileIntroSub");
+        if (!introSub || !introSubCharCountEl) return;
+        const len = (introSub.textContent || "").length;
+        introSubCharCountEl.textContent = Math.min(len, INTRO_SUB_MAX_LENGTH) + "/" + INTRO_SUB_MAX_LENGTH;
+    }
+
     if (profileEditBtn) {
         profileEditBtn.addEventListener("click", () => {
             const introText = document.getElementById("profileIntroText");
             const introSub = document.getElementById("profileIntroSub");
-            
+
             introText.contentEditable = "true";
             introSub.contentEditable = "true";
-            
+
             introText.style.border = "1px solid #4169e1";
             introSub.style.border = "1px solid #4169e1";
-            
+
+            if (introSubCharCountEl) {
+                introSubCharCountEl.style.display = "block";
+                updateIntroSubCounter();
+            }
+
+            introSubInputHandler = () => {
+                const text = introSub.textContent || "";
+                if (text.length > INTRO_SUB_MAX_LENGTH) {
+                    introSub.textContent = text.slice(0, INTRO_SUB_MAX_LENGTH);
+                    placeCaretAtEnd(introSub);
+                }
+                updateIntroSubCounter();
+            };
+            introSub.addEventListener("input", introSubInputHandler);
+
             profileEditBtn.style.display = "none";
             profileSaveBtn.style.display = "inline-block";
         });
     }
-    
+
+    function placeCaretAtEnd(el) {
+        el.focus();
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
     if (profileSaveBtn) {
         profileSaveBtn.addEventListener("click", () => {
             const introText = document.getElementById("profileIntroText");
             const introSub = document.getElementById("profileIntroSub");
-            
+
+            if (introSub.textContent.length > INTRO_SUB_MAX_LENGTH) {
+                introSub.textContent = introSub.textContent.slice(0, INTRO_SUB_MAX_LENGTH);
+            }
+
+            if (introSubInputHandler) {
+                introSub.removeEventListener("input", introSubInputHandler);
+                introSubInputHandler = null;
+            }
+            if (introSubCharCountEl) introSubCharCountEl.style.display = "none";
+
             introText.contentEditable = "false";
             introSub.contentEditable = "false";
-            
+
             introText.style.border = "none";
             introSub.style.border = "none";
-            
-            // 로컬스토리지에 저장
+
             localStorage.setItem("profileIntroText", introText.textContent);
             localStorage.setItem("profileIntroSub", introSub.textContent);
-            
+
             profileEditBtn.style.display = "inline-block";
             profileSaveBtn.style.display = "none";
             alert("저장되었습니다!");
         });
     }
 
-    // Profile Intro 불러오기
+    // Profile Intro 불러오기 (저장 시 280자 초과분 제거)
     function loadProfileIntro() {
         const introText = document.getElementById("profileIntroText");
         const introSub = document.getElementById("profileIntroSub");
-        
+
         if (localStorage.getItem("profileIntroText")) {
             introText.textContent = localStorage.getItem("profileIntroText");
         }
         if (localStorage.getItem("profileIntroSub")) {
-            introSub.textContent = localStorage.getItem("profileIntroSub");
+            let sub = localStorage.getItem("profileIntroSub");
+            if (sub.length > INTRO_SUB_MAX_LENGTH) sub = sub.slice(0, INTRO_SUB_MAX_LENGTH);
+            introSub.textContent = sub;
         }
     }
 
@@ -855,6 +905,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // 재생 목록 (API에서 로드, 업로드일 기준 정렬)
     let playlist = [];
     let currentTrackIndex = 0;
+    let bgmFirstInteractionDone = false;
+
+    // 첫 사용자 상호작용 시 BGM 재생 시도 (브라우저 정책으로 로드 시 재생이 막힌 경우 대비)
+    function tryBgmOnFirstInteraction() {
+        if (bgmFirstInteractionDone) return;
+        bgmFirstInteractionDone = true;
+        document.removeEventListener("click", tryBgmOnFirstInteraction);
+        document.removeEventListener("touchstart", tryBgmOnFirstInteraction);
+        document.removeEventListener("keydown", tryBgmOnFirstInteraction);
+        if (playlist.length > 0 && bgmPlayer && bgmPlayer.paused) {
+            loadTrack(0);
+            playTrack();
+        }
+    }
 
     // BGM 목록 API 로드 (재생용 URL은 절대경로로)
     function loadBgmList(autoplay) {
@@ -871,6 +935,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (autoplay && playlist.length > 0) {
                     loadTrack(0);
                     playTrack();
+                    // 자동재생이 막혀 있으면 첫 클릭/터치/키 입력 시 바로 재생
+                    document.addEventListener("click", tryBgmOnFirstInteraction, { once: true });
+                    document.addEventListener("touchstart", tryBgmOnFirstInteraction, { once: true });
+                    document.addEventListener("keydown", tryBgmOnFirstInteraction, { once: true });
                 }
             })
             .catch(() => {
@@ -925,9 +993,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 재생
     function playTrack() {
-        bgmPlayer.play().catch((err) => {
-            console.log("BGM 재생 오류:", err);
-        });
+        bgmPlayer.play().catch(() => {});
         btnPlay.style.display = "none";
         btnPause.style.display = "inline-block";
     }
@@ -1767,8 +1833,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(events => {
-                console.log('일정 데이터:', events);
-                
                 const diaryContentArea = document.querySelector('.diary-content-area');
                 if (!diaryContentArea) {
                     console.error('diary-content-area 요소를 찾을 수 없습니다.');
