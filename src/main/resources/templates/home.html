@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div class="cy-background">
+    <div class="cy-frame">
+        
+        <!-- 좌측 사이드바 -->
+        <aside class="cy-left">
+            <!-- TODAY/TOTAL -->
+            <div class="cy-counter">
+                <div class="counter-item">
+                    <span class="label">TODAY</span>
+                    <span class="value" id="counterToday">0</span>
+                </div>
+                <div class="counter-sep">|</div>
+                <div class="counter-item">
+                    <span class="label">TOTAL</span>
+                    <span class="value" id="counterTotal">0</span>
+                </div>
+            </div>
+
+            <!-- 프로필 카드 -->
+            <div class="cy-profile-card">
+                <div class="profile-status">
+                    <span class="status-label">TODAY IS ..</span>
+                    <span class="status-emoji">💐</span>
+                    <span class="status-text">행복</span>
+                </div>
+                
+                <div class="profile-photo-box">
+                    <img id="profileImage" src="/images/profile-couple.png" alt="프로필" class="profile-img">
+                    <div class="profile-image-controls" style="display: none;">
+                        <label for="profileImageUpload" class="profile-image-btn" style="cursor: pointer;">변경</label>
+                        <button class="profile-image-btn profile-delete-btn" id="profileImageDelete">삭제</button>
+                    </div>
+                    <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
+                </div>
+                
+                <div class="profile-intro">
+                    <p class="intro-text" id="profileIntroText" th:text="${groomName} + ' ♥ ' + ${brideName}">장성현 ♥ 김지현</p>
+                    <p class="intro-sub" id="profileIntroSub">우리의 결혼식에 초대합니다</p>
+                    <div class="admin-intro-controls" style="display: none;">
+                        <button id="profileEditBtn" class="admin-edit-btn">편집</button>
+                        <button id="profileSaveBtn" class="admin-save-btn" style="display: none;">적용</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="cy-history">
+                <div class="history-title">
+                    ★ HISTORY
+                    <button id="historyEditBtn" class="admin-edit-btn" style="display: none;">편집</button>
+                    <button id="historySaveBtn" class="admin-save-btn" style="display: none;">적용</button>
+                </div>
+                <div class="history-row">
+                    <span class="history-label">신랑</span>
+                    <span class="history-value" id="historyGroom" th:text="${groomName}">장성현</span>
+                </div>
+                <div class="history-row">
+                    <span class="history-label">신부</span>
+                    <span class="history-value" id="historyBride" th:text="${brideName}">김지현</span>
+                </div>
+                <div class="history-row">
+                    <span class="history-label">날짜</span>
+                    <span class="history-value" id="historyDate" th:text="${weddingDate}">4월 20일</span>
+                </div>
+                <div class="history-row">
+                    <span class="history-label">장소</span>
+                    <span class="history-value" id="historyPlace" th:text="${weddingHall}">DMC컨벤션 펠리체홀</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 가운데 메인 -->
+        <main class="cy-main">
+            <!-- 상단 헤더 -->
+            <div class="cy-main-header">
+                <div class="main-title-area">
+                    <h1 class="main-title" id="mainTitle" th:text="${groomName} + ' ♥ ' + ${brideName} + ' 결혼식'">장성현 ♥ 김지현 결혼식</h1>
+                    <div class="main-actions">
+                        <button class="action-btn">★일촌 맺기</button>
+                        <button class="action-btn">★팬 되기</button>
+                        <button id="mainTitleEditBtn" class="action-btn admin-edit-btn" style="display: none;">편집</button>
+                        <button id="mainTitleSaveBtn" class="action-btn admin-save-btn" style="display: none;">적용</button>
+                    </div>
+                </div>
+                <div class="main-url" id="mainUrl">
+                    http://www.cyworld.com/wedding-shjh
+                    <button id="mainUrlEditBtn" class="admin-edit-btn" style="display: none; margin-left: 10px;">편집</button>
+                    <button id="mainUrlSaveBtn" class="admin-save-btn" style="display: none; margin-left: 10px;">적용</button>
+                </div>
+            </div>
+
+            <!-- 친구에게를 + 최근게시물 가로 배치 -->
+            <div class="cy-info-wrapper">
+                <!-- 친구에게를 -->
+                <div class="cy-friend-section">
+                    <div class="friend-title">최근 게시물</div>
+                    <div id="recentPostsList">
+                        <!-- 최근 게시물이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 최근게시물 테이블 -->
+                <div class="cy-recent-table">
+                    <div class="recent-row">
+                        <span class="recent-label recent-link" data-section="info">다이어리</span>
+                        <span class="recent-count" id="diaryCount">0/86</span>
+                        <span class="recent-label recent-link" data-section="photo">사진첩</span>
+                        <span class="recent-count" id="photoCount">0/83</span>
+                    </div>
+                    <div class="recent-row">
+                        <span class="recent-label recent-link" data-section="ilchon">방명록</span>
+                        <span class="recent-count" id="guestbookCount">0/83</span>
+                        <span class="recent-label">-</span>
+                        <span class="recent-count">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미니룸 -->
+            <div class="cy-miniroom-section">
+                <div class="miniroom-header">
+                    <span class="miniroom-label">Miniroom</span>
+                    <span class="miniroom-brand" id="adminLoginBtn" style="cursor: pointer;">싸이월드</span>
+                    <div class="admin-miniroom-controls" style="display: none;">
+                        <label for="miniroomImageUpload" class="admin-edit-btn" style="cursor: pointer; display: inline-block; padding: 4px 10px;">이미지 변경</label>
+                        <input type="file" id="miniroomImageUpload" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                <div class="miniroom-content">
+                    <!-- 미니룸 이미지: 나중에 웨딩 일러스트로 교체 -->
+                    <img id="miniroomImage" src="https://via.placeholder.com/462x363?text=Wedding+Miniroom" alt="미니룸" class="miniroom-image">
+                    <button class="miniroom-delete-btn" id="miniroomImageDelete" style="display: none;">삭제</button>
+                </div>
+            </div>
+
+            <!-- 일촌평 -->
+            <div class="cy-ilchon">
+                <div class="ilchon-title-area">
+                    <span class="ilchon-title">일촌평</span>
+                    <span class="ilchon-sub">Friends say</span>
+                </div>
+                <div class="ilchon-input-area">
+                    <input type="text" id="ilchonName" placeholder="이름" class="ilchon-name-input">
+                    <input type="text" id="ilchonText" placeholder="일촌평을 작성해주세요" class="ilchon-input">
+                    <button type="button" id="ilchonSubmit" class="ilchon-submit">작성</button>
+                </div>
+                <div class="ilchon-list" id="ilchonList">
+                    <!-- 일촌평 목록 -->
+                </div>
+            </div>
+
+            <!-- 방명록 섹션 -->
+            <div class="cy-guestbook-section" style="display: none;">
+                <div class="guestbook-form-area">
+                    <div class="guestbook-header">
+                        <div class="guestbook-profile-preview">
+                            <img src="https://via.placeholder.com/100x100?text=Profile" alt="프로필" class="guestbook-profile-img">
+                        </div>
+                        <div class="guestbook-input-wrapper">
+                            <input type="text" id="guestbookMessage" placeholder="방명록에 하고싶은 말을 남겨보세요~!" class="guestbook-message-input">
+                            <div class="guestbook-options">
+                                <label><input type="radio" name="guestType" value="minimy" checked> 미니미</label>
+                                <label><input type="radio" name="guestType" value="card"> 카드</label>
+                                <button type="button" id="guestbookSubmit" class="guestbook-submit-btn">확인</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guestbook-list-area" id="guestbookListArea">
+                    <!-- 방명록 목록이 여기에 추가됩니다 -->
+                </div>
+            </div>
+
+            <!-- 다이어리 섹션 -->
+            <div class="cy-diary-section" style="display: none;">
+                <div class="diary-calendar-header">
+                    <div class="diary-current-date">
+                        <div class="diary-date-large" id="diaryDateLarge">01.29</div>
+                        <div class="diary-date-day" id="diaryDateDay">Thu</div>
+                    </div>
+                    <div class="diary-calendar">
+                        <div class="diary-calendar-nav">
+                            <button class="diary-nav-btn" id="diaryPrevMonth">◀</button>
+                            <span class="diary-month-year" id="diaryMonthYear">2026.01</span>
+                            <button class="diary-nav-btn" id="diaryNextMonth">▶</button>
+                        </div>
+                        <div class="diary-calendar-grid" id="diaryCalendarGrid">
+                            <!-- 달력이 여기에 생성됩니다 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="diary-content-area">
+                    <div class="diary-no-event">날짜를 선택해주세요.</div>
+                </div>
+            </div>
+
+            <!-- 사진첩 섹션 -->
+            <div class="cy-photo-section" style="display: none;">
+                <div class="photo-section-header">
+                    <span class="photo-label">사진첩</span>
+                </div>
+                <div class="photo-gallery-wrapper">
+                    <div class="photo-gallery">
+                        <img src="https://via.placeholder.com/200x200?text=Photo1" alt="사진1">
+                        <img src="https://via.placeholder.com/200x200?text=Photo2" alt="사진2">
+                        <img src="https://via.placeholder.com/200x200?text=Photo3" alt="사진3">
+                        <img src="https://via.placeholder.com/200x200?text=Photo4" alt="사진4">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 세로 메뉴 (책갈피) - cy-main 바깥 -->
+        <nav class="cy-vertical-menu">
+            <button class="vmenu-btn active" data-section="home">홈</button>
+            <button class="vmenu-btn" data-section="info">다이어리</button>
+            <button class="vmenu-btn" data-section="ilchon">방명록</button>
+            <button class="vmenu-btn" data-section="photo">사진첩</button>
+        </nav>
+
+        <!-- 우측 사이드바 -->
+        <aside class="cy-right">
+            <!-- BGM 플레이어 -->
+            <div class="cy-bgm">
+                <div class="bgm-title">BGM</div>
+                
+                <!-- 노래 제목 마키 -->
+                <div class="bgm-marquee-container">
+                    <div class="bgm-marquee" id="bgmMarquee">♪ 노래를 선택해주세요</div>
+                </div>
+                
+                <audio id="bgmPlayer"></audio>
+                
+                <!-- 컨트롤 버튼 -->
+                <div class="bgm-controls">
+                    <button id="btnPrev" class="bgm-btn" title="이전">⏮</button>
+                    <button id="btnPlay" class="bgm-btn" title="재생">▶</button>
+                    <button id="btnPause" class="bgm-btn" title="일시정지" style="display: none;">⏸</button>
+                    <button id="btnNext" class="bgm-btn" title="다음">⏭</button>
+                    <button id="btnList" class="bgm-btn" title="목록">List</button>
+                    <!-- 관리자 전용: 음악 업로드 (로그인 시에만 표시) -->
+                    <button type="button" id="btnBgmUpload" class="bgm-btn bgm-btn-upload" title="음악 업로드" style="display: none;">업로드</button>
+                </div>
+                <input type="file" id="bgmFileInput" accept="audio/*" style="display: none;">
+                
+                <!-- 볼륨 조절 -->
+                <div class="bgm-volume-container">
+                    <span class="bgm-volume-label">볼륨</span>
+                    <input type="range" id="volumeSlider" class="bgm-volume-slider" min="0" max="100" value="70">
+                </div>
+                
+                <!-- 재생 목록 (기본 사이즈 유지, 넘치면 스크롤) -->
+                <div class="bgm-playlist" id="bgmPlaylist">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<!-- 관리자 로그인 모달 -->
+<div id="adminLoginModal" class="page-modal hidden">
+    <div class="modal-content-box" style="max-width: 400px;">
+        <div class="modal-header-bar">
+            <h2>관리자 로그인</h2>
+            <button id="adminLoginClose" class="modal-close-btn">×</button>
+        </div>
+        <div class="modal-body-area">
+            <div class="admin-login-form">
+                <div class="admin-input-group">
+                    <label>ID</label>
+                    <input type="text" id="adminId" placeholder="관리자 ID">
+                </div>
+                <div class="admin-input-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" placeholder="비밀번호">
+                </div>
+                <div class="admin-login-error" id="adminLoginError" style="display: none; color: red; font-size: 11px; margin-top: 10px;">
+                    ID 또는 비밀번호가 일치하지 않습니다.
+                </div>
+                <button id="adminLoginSubmit" class="admin-login-submit">로그인</button>
+                <button id="adminLogoutBtn" class="admin-logout-btn" style="display: none;">로그아웃</button>
+                <button id="adminApplyAllBtn" class="admin-apply-all-btn" style="display: none;">💾 모두 적용</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 다이어리 일정 모달 -->
+<div id="diaryEventModal" class="page-modal hidden">
+    <div class="modal-content-box" style="max-width: 500px;">
+        <div class="modal-header-bar">
+            <h2 id="diaryEventModalTitle">일정</h2>
+            <button id="diaryEventModalClose" class="modal-close-btn">×</button>
+        </div>
+        <div class="modal-body-area" id="diaryEventModalBody">
+            <!-- 동적 콘텐츠 -->
+        </div>
+    </div>
+</div>
+
+<!-- 모달: 방명록/다이어리/사진첩 -->
+<div id="pageModal" class="page-modal hidden">
+    <div class="modal-content-box">
+        <div class="modal-header-bar">
+            <h2 id="modalPageTitle">제목</h2>
+            <button id="modalClose" class="modal-close-btn">×</button>
+        </div>
+        <div class="modal-body-area" id="modalPageBody">
+            <!-- 동적 콘텐츠 -->
+        </div>
+    </div>
+</div>
+
+<!-- 템플릿들 -->
+<template id="tplGuestbook">
+    <div class="page-guestbook">
+        <form id="formGuestbook" class="guestbook-form">
+            <input type="text" id="inpGuestName" placeholder="이름" required>
+            <textarea id="inpGuestMsg" placeholder="축하 메시지를 남겨주세요" required rows="4"></textarea>
+            <button type="submit" class="form-submit-btn">등록</button>
+        </form>
+        <ul id="listGuestbook" class="guestbook-list"></ul>
+    </div>
+</template>
+
+<template id="tplDiary">
+    <div class="page-diary">
+        <article class="diary-post">
+            <h3 class="diary-post-title">우리의 이야기</h3>
+            <p class="diary-post-text">
+                처음 만난 날부터 지금까지,<br>
+                서로의 일상 속에서 웃음을 나누며 여기까지 왔습니다.<br>
+                함께 걸어온 시간만큼 앞으로의 시간도<br>
+                천천히, 단단하게 쌓아가고 싶습니다.
+            </p>
+        </article>
+        <article class="diary-post">
+            <h3 class="diary-post-title">오시는 길</h3>
+            <p class="diary-post-text">
+                지하철 DMC역 인근에 위치한 DMC컨벤션 펠리체홀에서 예식이 진행됩니다.<br>
+                자세한 약도와 주차 안내는 아래 이미지를 참고해주세요.
+            </p>
+            <div class="diary-map-placeholder">[여기에 지도 이미지]</div>
+        </article>
+    </div>
+</template>
+
+<template id="tplPhoto">
+    <div class="page-photo">
+        <div class="photo-gallery">
+            <img src="https://via.placeholder.com/200x200?text=Photo1" alt="사진1">
+            <img src="https://via.placeholder.com/200x200?text=Photo2" alt="사진2">
+            <img src="https://via.placeholder.com/200x200?text=Photo3" alt="사진3">
+            <img src="https://via.placeholder.com/200x200?text=Photo4" alt="사진4">
+        </div>
+    </div>
+</template>
+
+<script th:src="@{/js/home.js}"></script>
+</body>
+</html>

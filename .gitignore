@@ -1,0 +1,31 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+*.jar
+!src/main/resources/static/**/*.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Spring / H2
+data/
+*.db
+*.trace.db
+*.mv.db
+
+# 업로드 파일 (배포 시 서버에서 새로 생성)
+uploads/
+
+# 로그
+*.log
+logs/
+
+# 기타
+.env
+.env.local
